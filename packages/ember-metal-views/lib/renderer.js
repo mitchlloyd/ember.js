@@ -1,3 +1,4 @@
+import defaultEnv from "ember-htmlbars/env";
 import run from "ember-metal/run_loop";
 import { get } from "ember-metal/property_get";
 import { set } from "ember-metal/property_set";
@@ -7,6 +8,7 @@ import {
 } from "ember-metal/instrumentation";
 import buildComponentTemplate from "ember-views/system/build-component-template";
 //import { deprecation } from "ember-views/compat/attrs-proxy";
+import { internal } from 'htmlbars-runtime';
 
 function Renderer(_helper) {
   this._dom = _helper;
@@ -190,7 +192,7 @@ Renderer.prototype.renderElementRemoval =
       view._willRemoveElement = false;
 
       if (view.renderNode) {
-        view.renderNode.clear();
+        internal.clearMorph(view.renderNode, {hooks:defaultEnv.hooks, view:this}, false);
       }
       this.didDestroyElement(view);
     }

@@ -4,6 +4,7 @@ import { changeProperties } from "ember-metal/property_events";
 import { isWatching } from "ember-metal/watching";
 import EmberObject from "ember-runtime/system/object";
 import EmberView from "ember-views/views/view";
+import { compile } from "ember-template-compiler";
 
 var view;
 
@@ -191,7 +192,36 @@ QUnit.test("classNames removed by a classNameBindings observer should not re-app
   equal(view.$().attr('class'), 'ember-view');
 });
 
-QUnit.skip("classNameBindings lifecycle test", function() {
+QUnit.test("stream test", function() {
+  run(function() {
+    view = EmberView.create({
+      template: compile('{{view.priority}}'),
+      priority: 'high'
+    });
+  });
+
+  equal(isWatching(view, 'priority'), false, 'is not watching initially');
+
+  run(function() {
+    view.createElement();
+  });
+
+  // equal(view.$().attr('class'), 'ember-view high');
+  equal(isWatching(view, 'priority'), true, 'is watching priority');
+
+  run(function() {
+    view.remove();
+    view.set('priority', 'low');
+  });
+
+  // var internal = window.Ember.__loader.require('htmlbars-runtime').internal;
+  // debugger
+  // internal.clearMorph(view.renderNode, view.env);
+
+  equal(isWatching(view, 'priority'), false, 'stopped watching');
+});
+
+QUnit.test("classNameBindings lifecycle test", function() {
   run(function() {
     view = EmberView.create({
       classNameBindings: ['priority'],
@@ -213,6 +243,7 @@ QUnit.skip("classNameBindings lifecycle test", function() {
     view.set('priority', 'low');
   });
 
+  debugger;
   equal(isWatching(view, 'priority'), false);
 });
 
