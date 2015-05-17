@@ -769,6 +769,21 @@ QUnit.test('Child views created using the view helper and that have a viewName s
   equal(get(parentView, 'ohai'), childView);
 });
 
+QUnit.test('viewName can be used in parent template', function() {
+  var template = `
+    {{ohai.elementId}}
+    {{view id="someid" viewName="ohai"}}
+  `;
+
+  view = EmberView.create({
+    template: compile(template)
+  });
+
+  runAppend(view);
+
+  ok(view.$().text().match(/someid/), "the elementId property was rendered");
+});
+
 QUnit.test('{{view}} id attribute should set id on layer', function() {
   registry.register('template:foo', compile('{{#view view.idView id="bar"}}baz{{/view}}'));
 
